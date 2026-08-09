@@ -304,7 +304,15 @@ struct ModelsView: View {
             }
             .listStyle(.inset)
             
-            if engine.isTranscribing || engine.progressValue > 0 {
+            if !engine.progressText.isEmpty && engine.progressText != "Modelo carregado." && engine.progressText != "Transcrição Concluída!" && engine.progressText != "Lote Concluído!" && engine.progressText != "Transcrição Cancelada." {
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text(engine.progressText)
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                }
+            } else if engine.isTranscribing || engine.progressValue > 0 {
                 VStack(alignment: .leading) {
                     ProgressView(value: engine.progressValue)
                     Text(engine.progressText)
