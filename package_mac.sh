@@ -31,6 +31,12 @@ cat << 'EOF' > SimpleTranscribe.app/Contents/Info.plist
     <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>O Simple Transcribe precisa acessar a pasta Documentos para baixar e ler os modelos de Inteligência Artificial.</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>O Simple Transcribe precisa acessar a pasta Downloads para salvar os seus arquivos de transcrição.</string>
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>O Simple Transcribe precisa acessar a pasta Mesa (Desktop) para ler e salvar seus arquivos.</string>
 </dict>
 </plist>
 EOF

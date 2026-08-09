@@ -58,16 +58,28 @@ class TranscriptionEngine: ObservableObject {
 
     func refreshDownloadedModels() {
         let fm = FileManager.default
-        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let hfPath = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
+        let basePaths = [
+            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        ].compactMap { $0 }
         
         var downloaded: [String] = []
-        for model in availableModels {
-            let modelPath = hfPath.appendingPathComponent(model)
-            if fm.fileExists(atPath: modelPath.path) {
-                downloaded.append(model)
+        for basePath in basePaths {
+            let hfPath = basePath.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
+            
+            // Tentar ler para forçar TCC prompt se necessário
+            _ = try? fm.contentsOfDirectory(atPath: hfPath.path)
+            
+            for model in availableModels {
+                let modelPath = hfPath.appendingPathComponent(model)
+                if fm.fileExists(atPath: modelPath.path) {
+                    if !downloaded.contains(model) {
+                        downloaded.append(model)
+                    }
+                }
             }
         }
+        
         DispatchQueue.main.async {
             self.downloadedModels = downloaded
         }
@@ -226,16 +238,22 @@ class TranscriptionEngine: ObservableObject {
 
     func deleteModel(_ modelName: String) {
         let fm = FileManager.default
-        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let modelPath = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml/\(modelName)")
+        let basePaths = [
+            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        ].compactMap { $0 }
         
-        do {
-            if fm.fileExists(atPath: modelPath.path) {
-                try fm.removeItem(at: modelPath)
+        for basePath in basePaths {
+            let modelPath = basePath.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml/\(modelName)")
+            do {
+                if fm.fileExists(atPath: modelPath.path) {
+                    try fm.removeItem(at: modelPath)
+                }
+            } catch {
+                print("Erro ao deletar: \(error)")
             }
-        } catch {
-            print("Erro ao deletar: \(error)")
         }
+        
         refreshDownloadedModels()
     }
 
