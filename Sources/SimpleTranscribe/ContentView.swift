@@ -328,7 +328,11 @@ struct AboutView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text("Versão 1.0")
+                        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                Text("Versão \(version)")
+            } else {
+                Text("Versão Desconhecida")
+            }
                 .font(.headline)
                 .foregroundColor(.secondary)
             

@@ -45,6 +45,6 @@ EOF
 zip -r SimpleTranscribe-Mac.zip SimpleTranscribe.app
 
 # Create tag and release
-git tag v1.0.0
-git push origin v1.0.0
-gh release create v1.0.0 SimpleTranscribe-Mac.zip --title "Simple Transcribe v1.0.0 (Native Mac App)" --notes "Release Inicial da versão nativa para macOS (Apple Silicon)"
+git tag v1.0.2
+git push origin v1.0.2
+gh release create v1.0.2 SimpleTranscribe-Mac.zip --title "Simple Transcribe v1.0.2 (Native Mac App)" --notes "Release Inicial da versão nativa para macOS (Apple Silicon)"
