@@ -51,6 +51,28 @@ class TranscriptionEngine: ObservableObject {
     private var pipe: WhisperKit?
     private var currentTask: Task<Void, Never>?
     private var currentLoadedModel: String?
+
+    init() {
+        refreshDownloadedModels()
+    }
+
+    func refreshDownloadedModels() {
+        let fm = FileManager.default
+        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let hfPath = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
+        
+        var downloaded: [String] = []
+        for model in availableModels {
+            let modelPath = hfPath.appendingPathComponent(model)
+            if fm.fileExists(atPath: modelPath.path) {
+                downloaded.append(model)
+            }
+        }
+        DispatchQueue.main.async {
+            self.downloadedModels = downloaded
+        }
+    }
+
     
     func loadModel(modelName: String = "openai_whisper-base") async {
         do {
@@ -58,6 +80,7 @@ class TranscriptionEngine: ObservableObject {
             pipe = try await WhisperKit(model: modelName)
             currentLoadedModel = modelName
             progressText = "Modelo carregado."
+            refreshDownloadedModels()
         } catch {
             let err = error.localizedDescription
             progressText = "Erro ao carregar modelo: \(err)"
@@ -200,14 +223,22 @@ class TranscriptionEngine: ObservableObject {
         batchSelection.removeAll()
     }
     
+
     func deleteModel(_ modelName: String) {
-        // Models are usually cached in HF caches or app support.
-        // WhisperKit provides `WhisperKit.formatModelPath` or similar, but simpler is to rely on user interaction or finding it in the file system.
-        // For simplicity, we just remove it from downloadedModels list since standard CoreML models cached via HF are in a hidden `.cache/huggingface` folder.
-        if let idx = downloadedModels.firstIndex(of: modelName) {
-            downloadedModels.remove(at: idx)
+        let fm = FileManager.default
+        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let modelPath = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml/\(modelName)")
+        
+        do {
+            if fm.fileExists(atPath: modelPath.path) {
+                try fm.removeItem(at: modelPath)
+            }
+        } catch {
+            print("Erro ao deletar: \(error)")
         }
+        refreshDownloadedModels()
     }
+
     
     func cancelTranscription() {
         currentTask?.cancel()

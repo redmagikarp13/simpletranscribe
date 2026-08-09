@@ -266,9 +266,18 @@ struct ModelsView: View {
             
             List {
                 ForEach(engine.availableModels, id: \.self) { model in
+                    let isDownloaded = engine.downloadedModels.contains(model)
+                    
                     HStack {
-                        Text(model)
-                            .font(.headline)
+                        VStack(alignment: .leading) {
+                            Text(model)
+                                .font(.headline)
+                            if isDownloaded {
+                                Text("Baixado")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                         
                         Spacer()
                         
@@ -278,7 +287,7 @@ struct ModelsView: View {
                                 .padding(.trailing, 10)
                         }
                         
-                        Button("Baixar") {
+                        Button(isDownloaded ? "Recarregar" : "Baixar") {
                             Task {
                                 await engine.loadModel(modelName: model)
                             }
@@ -288,6 +297,7 @@ struct ModelsView: View {
                             engine.deleteModel(model)
                         }
                         .foregroundColor(.red)
+                        .disabled(!isDownloaded)
                     }
                     .padding(.vertical, 5)
                 }
