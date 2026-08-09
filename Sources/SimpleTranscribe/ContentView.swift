@@ -304,7 +304,7 @@ struct ModelsView: View {
             }
             .listStyle(.inset)
             
-            if !engine.progressText.isEmpty && engine.progressText != "Modelo carregado." && engine.progressText != "Transcrição Concluída!" && engine.progressText != "Lote Concluído!" && engine.progressText != "Transcrição Cancelada." {
+            if engine.progressText != "" && engine.progressText != "Modelo carregado." && engine.progressText != "Transcrição Concluída!" && engine.progressText != "Lote Concluído!" && engine.progressText != "Transcrição Cancelada." {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
@@ -336,13 +336,15 @@ struct AboutView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-                        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-                Text("Versão \(version)")
-            } else {
-                Text("Versão Desconhecida")
+            Group {
+                if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                    Text("Versão \(version)")
+                } else {
+                    Text("Versão Desconhecida")
+                }
             }
-                .font(.headline)
-                .foregroundColor(.secondary)
+            .font(.headline)
+            .foregroundColor(.secondary)
             
             Text("Desenvolvido por Magikarp13")
                 .font(.title3)
