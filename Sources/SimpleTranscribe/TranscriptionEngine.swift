@@ -52,39 +52,26 @@ class TranscriptionEngine: ObservableObject {
     private var currentTask: Task<Void, Never>?
     private var currentLoadedModel: String?
 
+    private var modelsDirectory: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let dir = appSupport.appendingPathComponent("com.simpletranscribe.app/models")
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
     init() {
         refreshDownloadedModels()
     }
 
-    func refreshDownloadedModels() {
+        func refreshDownloadedModels() {
         let fm = FileManager.default
-        let basePaths = [
-            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
-            fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-        ].compactMap { $0 }
+        let hfPath = modelsDirectory.appendingPathComponent("argmaxinc/whisperkit-coreml")
         
-        // Força prompt TCC lendo a raiz
-        if let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first {
-            _ = try? fm.contentsOfDirectory(atPath: docs.path)
-        }
-        if let desk = fm.urls(for: .desktopDirectory, in: .userDomainMask).first {
-            _ = try? fm.contentsOfDirectory(atPath: desk.path)
-        }
-        if let down = fm.urls(for: .downloadsDirectory, in: .userDomainMask).first {
-            _ = try? fm.contentsOfDirectory(atPath: down.path)
-        }
-
         var downloaded: [String] = []
-        for basePath in basePaths {
-            let hfPath = basePath.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
-            
-            for model in availableModels {
-                let modelPath = hfPath.appendingPathComponent(model)
-                if fm.fileExists(atPath: modelPath.path) {
-                    if !downloaded.contains(model) {
-                        downloaded.append(model)
-                    }
-                }
+        for model in availableModels {
+            let modelPath = hfPath.appendingPathComponent(model)
+            if fm.fileExists(atPath: modelPath.path) {
+                downloaded.append(model)
             }
         }
         
@@ -93,11 +80,10 @@ class TranscriptionEngine: ObservableObject {
         }
     }
 
-    
-    func loadModel(modelName: String = "openai_whisper-base") async {
+        func loadModel(modelName: String = "openai_whisper-base") async {
         do {
             progressText = "Carregando modelo \(modelName)"
-            pipe = try await WhisperKit(model: modelName)
+            pipe = try await WhisperKit(model: modelName, downloadBase: modelsDirectory)
             currentLoadedModel = modelName
             progressText = "Modelo carregado."
             refreshDownloadedModels()
@@ -244,29 +230,20 @@ class TranscriptionEngine: ObservableObject {
     }
     
 
-    func deleteModel(_ modelName: String) {
+        func deleteModel(_ modelName: String) {
         let fm = FileManager.default
-        let basePaths = [
-            fm.urls(for: .documentDirectory, in: .userDomainMask).first,
-            fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-        ].compactMap { $0 }
-        
-        for basePath in basePaths {
-            let modelPath = basePath.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml/\(modelName)")
-            do {
-                if fm.fileExists(atPath: modelPath.path) {
-                    try fm.removeItem(at: modelPath)
-                }
-            } catch {
-                print("Erro ao deletar: \(error)")
+        let modelPath = modelsDirectory.appendingPathComponent("argmaxinc/whisperkit-coreml/\(modelName)")
+        do {
+            if fm.fileExists(atPath: modelPath.path) {
+                try fm.removeItem(at: modelPath)
             }
+        } catch {
+            print("Erro ao deletar: \(error)")
         }
-        
         refreshDownloadedModels()
     }
 
-    
-    func cancelTranscription() {
+        func cancelTranscription() {
         currentTask?.cancel()
         isTranscribing = false
         progressText = "Transcrição Cancelada."
