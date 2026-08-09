@@ -7,7 +7,7 @@ cask "simpletranscribe" do
   desc "Transcritor local de áudio para texto otimizado para Apple Silicon"
   homepage "https://github.com/redmagikarp13/simpletranscribe"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
   depends_on arch: :arm64
 
   app "SimpleTranscribe.app"
