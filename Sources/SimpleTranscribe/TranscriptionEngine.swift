@@ -63,12 +63,20 @@ class TranscriptionEngine: ObservableObject {
             fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
         ].compactMap { $0 }
         
+        // Força prompt TCC lendo a raiz
+        if let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first {
+            _ = try? fm.contentsOfDirectory(atPath: docs.path)
+        }
+        if let desk = fm.urls(for: .desktopDirectory, in: .userDomainMask).first {
+            _ = try? fm.contentsOfDirectory(atPath: desk.path)
+        }
+        if let down = fm.urls(for: .downloadsDirectory, in: .userDomainMask).first {
+            _ = try? fm.contentsOfDirectory(atPath: down.path)
+        }
+
         var downloaded: [String] = []
         for basePath in basePaths {
             let hfPath = basePath.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
-            
-            // Tentar ler para forçar TCC prompt se necessário
-            _ = try? fm.contentsOfDirectory(atPath: hfPath.path)
             
             for model in availableModels {
                 let modelPath = hfPath.appendingPathComponent(model)
