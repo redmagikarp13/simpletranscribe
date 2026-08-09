@@ -1,6 +1,6 @@
 cask "simpletranscribe" do
-  version "1.0.4"
-  sha256 "e3e35f380464d20c421e7835a9317dad5e73ad3a71a134a47a86f69462d2060b"
+  version "1.0.5"
+  sha256 "5f4f2065a64a7d0f525cf5974f81809606250040a87e45e11efe74890b6606f1"
 
   url "https://github.com/redmagikarp13/simpletranscribe/releases/download/v#{version}/SimpleTranscribe-Mac.zip"
   name "Simple Transcribe"
