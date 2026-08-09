@@ -24,9 +24,9 @@ cat << 'EOF' > SimpleTranscribe.app/Contents/Info.plist
     <key>CFBundleName</key>
     <string>Simple Transcribe</string>
     <key>CFBundleVersion</key>
-    <string>1.0.8</string>
+    <string>1.0.9</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.8</string>
+    <string>1.0.9</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
@@ -45,6 +45,6 @@ EOF
 zip -r SimpleTranscribe-Mac.zip SimpleTranscribe.app
 
 # Create tag and release
-git tag v1.0.8
-git push origin v1.0.8
-gh release create v1.0.8 SimpleTranscribe-Mac.zip --title "Simple Transcribe v1.0.8 (Native Mac App)" --notes "Release Inicial da versão nativa para macOS (Apple Silicon)"
+git tag v1.0.9
+git push origin v1.0.9
+gh release create v1.0.9 SimpleTranscribe-Mac.zip --title "Simple Transcribe v1.0.9 (Native Mac App)" --notes "Release Inicial da versão nativa para macOS (Apple Silicon)"

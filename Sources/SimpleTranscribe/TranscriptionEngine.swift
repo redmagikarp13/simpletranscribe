@@ -65,7 +65,7 @@ class TranscriptionEngine: ObservableObject {
 
         func refreshDownloadedModels() {
         let fm = FileManager.default
-        let hfPath = modelsDirectory.appendingPathComponent("argmaxinc/whisperkit-coreml")
+        let hfPath = modelsDirectory.appendingPathComponent("models/argmaxinc/whisperkit-coreml")
         
         var downloaded: [String] = []
         for model in availableModels {
@@ -232,7 +232,7 @@ class TranscriptionEngine: ObservableObject {
 
         func deleteModel(_ modelName: String) {
         let fm = FileManager.default
-        let modelPath = modelsDirectory.appendingPathComponent("argmaxinc/whisperkit-coreml/\(modelName)")
+        let modelPath = modelsDirectory.appendingPathComponent("models/argmaxinc/whisperkit-coreml/\(modelName)")
         do {
             if fm.fileExists(atPath: modelPath.path) {
                 try fm.removeItem(at: modelPath)
